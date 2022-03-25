@@ -1,2 +1,0 @@
-library(data.table)
-mydat <- fread('https://d3jqyw10j8e7p9.cloudfront.net/data-pipeline/data/score/downloadable/Screening_Tool_Data.zip')
