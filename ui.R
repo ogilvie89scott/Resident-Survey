@@ -30,6 +30,17 @@ ui <- dashboardPage(
                                      "August 2021 Resident Survey Dashboard"))
                              ),
                     fluidRow(
+                      box(width = 12,
+                          p(style = "height: 10px; font-size: 12px;",
+                            "Select two variables from the drop boxes below."),
+                          p(style = "height: 10px; font-size: 12px;",
+                            "Chi-Squared and other statistic of the two variables is shown below."),
+                          p(style = "height: 30px; font-size: 12px;",
+                            "Cramer's V is a number between 0 and 1. The closer the Cramer's V is to 1, the stronger the relationship is between the two variables. Scores above .10 are weakly associated. Scores above .4 are strongly related."),
+                          p(style = "height: 10px; font-size: 12px;",
+                            "P-values should be smaller than .02 to be statistically significant."))
+                    ),
+                    fluidRow(
                       box(
                         selectInput(
                           "ycol",
@@ -175,7 +186,7 @@ ui <- dashboardPage(
                             "council_district"   )
                         ),
                         status = "danger",
-                        width = 3
+                        width = 6
                       ),
                       box(
                         selectInput(
@@ -322,18 +333,10 @@ ui <- dashboardPage(
                             "council_district"   )
                         ),
                         status = "primary",
-                        width = 3
+                        width = 6
                       ),
-                      box(width = 6,
-                          p(style = "height: 10px; font-size: 12px;",
-                            "Select two variables from the drop boxes on the left."),
-                          p(style = "height: 10px; font-size: 12px;",
-                            "Chi-Squared and other statistic of the two variables is shown below."),
-                          p(style = "height: 30px; font-size: 12px;",
-                            "Cramer's V is a number between 0 and 1. The closer the Cramer's V is to 1, the stronger the relationship is between the two variables. Scores above .10 are weakly associated. Scores above .4 are strongly related."),
-                          p(style = "height: 10px; font-size: 12px;",
-                            "P-values should be smaller than .02 to be statistically significant."))
                     ),
+
                     fluidRow(
                       box(
                         id = "mosaic_container",
@@ -376,6 +379,16 @@ ui <- dashboardPage(
                       width = 12,
                       div(style = "height: 50px; font-size: 40px;",
                           "March 2022 Resident Survey Dashboard"))
+                    ),
+                    fluidRow(box(width = 12,
+                                 p(style = "height: 10px; font-size: 12px;",
+                                   "Select two variables from the drop boxes on the left."),
+                                 p(style = "height: 10px; font-size: 12px;",
+                                   "Chi-Squared and other statistic of the two variables is shown below."),
+                                 p(style = "height: 30px; font-size: 12px;",
+                                   "Cramer's V is a number between 0 and 1. The closer the Cramer's V is to 1, the stronger the relationship is between the two variables. Scores above .10 are weakly associated. Scores above .4 are strongly related."),
+                                 p(style = "height: 10px; font-size: 12px;",
+                                                         "P-values should be smaller than .02 to be statistically significant."))
                     ),
                     fluidRow(
                       box(
@@ -523,7 +536,7 @@ ui <- dashboardPage(
                             "council_district"   )
                         ),
                         status = "danger",
-                        width = 3
+                        width = 6
                       ),
                       box(
                         selectInput(
@@ -670,17 +683,8 @@ ui <- dashboardPage(
                             "council_district"   )
                         ),
                         status = "primary",
-                        width = 3
+                        width = 6
                       ),
-                      box(width = 6,
-                          p(style = "height: 10px; font-size: 12px;",
-                            "Select two variables from the drop boxes on the left."),
-                          p(style = "height: 10px; font-size: 12px;",
-                            "Chi-Squared and other statistic of the two variables is shown below."),
-                          p(style = "height: 30px; font-size: 12px;",
-                            "Cramer's V is a number between 0 and 1. The closer the Cramer's V is to 1, the stronger the relationship is between the two variables. Scores above .10 are weakly associated. Scores above .4 are strongly related."),
-                          p(style = "height: 10px; font-size: 12px;",
-                            "P-values should be smaller than .02 to be statistically significant."))
                     ),
                     fluidRow(
                       box(
