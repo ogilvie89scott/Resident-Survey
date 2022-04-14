@@ -14,7 +14,7 @@ server <- function(input, output, session) {
       type = "deviance"
     )
   })
-  
+
   output$downloadMosaic <- downloadHandler(
     filename = function() {
       paste("kcmofy22_mosaic", "png", sep = ".")
@@ -44,7 +44,7 @@ server <- function(input, output, session) {
         title = "Relationship between Variables",
         data = kcmofy2022_b,
         y = all_of(.y),
-        legend.title = input$ycol,
+        legend.title =  "Y Variable Selected",
         xlab = input$xcol,
         ylab = NULL,
         label.fill.alpha = .9,
@@ -165,7 +165,7 @@ server <- function(input, output, session) {
         title = "Relationship between Variables",
         data = kcmo_mar_2022,
         y = all_of(.y),
-        legend.title = input$ycol2,
+        legend.title = "Y Variable Selected",
         xlab = input$xcol2,
         ylab = NULL,
         label.fill.alpha = .9,
@@ -241,6 +241,8 @@ server <- function(input, output, session) {
         vjust = 0.5,
         size = 4
       )
-  })  
+  })
+  ## MAR 2021-----------------------------
+  
 }
 

@@ -318,7 +318,6 @@ names(kcmofy2022_b) <-
     "q12_09_animal_shelter_adoption_efforts_and_community_education_resources" ,                                                      
     "q12_10_process_for_intake_of_animals_by_animal_control" ,
     
-    
     "q14_01_the_availability_of_affordable_housing_for_your_family"   ,                                                                     
     "q14_02_the_quality_of_housing_for_your_family"    ,                                                                                    
     "q14_03_legal_protections_including_fair_housing_and_eviction_prevention_for_renters"  ,                                                
@@ -772,6 +771,8 @@ names(kcmo_mar_2022) <-
     "council_district"   )
 kcmo_mar_2022[sapply(kcmo_mar_2022, is.numeric)] <-
   lapply(kcmo_mar_2022[sapply(kcmo_mar_2022, is.numeric)], as.factor)
+## MAR 2021--------------------------------------------------------
+
 
 # DATA TRANSFORMATION AND NEW VARIABLES FOR EMPLOYEE SURVEY----------------
 
