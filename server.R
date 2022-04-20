@@ -1,6 +1,8 @@
 #
 server <- function(input, output, session) {
   ## AUG 2021 ----------------------------------------------
+
+
   output$Mosaic <- renderPlot({
     graphics::mosaicplot(
       ~ kcmofy2022_b[[input$xcol]] + kcmofy2022_c[[input$ycol]],
@@ -46,7 +48,7 @@ server <- function(input, output, session) {
         y = all_of(.y),
         legend.title =  "Y Variable Selected",
         xlab = input$xcol,
-        ylab = NULL,
+        ylab ="Percent of Column",
         label.fill.alpha = .9,
         perc.k = 0,
         sample.size.label = T,
@@ -167,7 +169,7 @@ server <- function(input, output, session) {
         y = all_of(.y),
         legend.title = "Y Variable Selected",
         xlab = input$xcol2,
-        ylab = NULL,
+        ylab = "Percent of Column",
         label.fill.alpha = .9,
         perc.k = 0,
         sample.size.label = T,
