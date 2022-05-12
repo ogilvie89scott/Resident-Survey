@@ -1,10 +1,33 @@
 # LIST OF REQUIRED PACKAGES -----------------------------------------------
 
 # Package names
-packages <- c("broom", "data.table", "DT", "CGPfunctions", "ggridges", "leaflet", "lintr",
-              "lubridate", "plotly", "lubridate", "rintrojs", "shiny",
-              "shinycssloaders", "shinydashboard", "shinyjs", "shinyWidgets",
-              "ggpubr", "tidyverse", "rcompanion", "viridis", "zoo")
+packages <-
+  c(
+    "broom",
+    "data.table",
+    "DT",
+    "CGPfunctions",
+    "ggridges",
+    "leaflet",
+    "lintr",
+    "lubridate",
+    "plotly",
+    "lubridate",
+    "rintrojs",
+    "shiny",
+    "shinycssloaders",
+    "shinydashboard",
+    "shinyjs",
+    "shinyWidgets",
+    "surveydata",
+    "ggpubr",
+    "tidyverse",
+    "rcompanion",
+    "viridis",
+    "zoo",
+    "recipes",
+    "echarts4r"
+  )
 
 # Install packages not yet installed
 installed_packages <- packages %in% rownames(installed.packages())
@@ -14,4 +37,3 @@ if (any(installed_packages == FALSE)) {
 
 # Packages loading
 invisible(lapply(packages, library, character.only = TRUE))
-
