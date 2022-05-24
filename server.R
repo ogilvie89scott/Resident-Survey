@@ -1,30 +1,54 @@
+# ********** Start of Header **************
+# Title: Server for Resident Survey app
 #
-server <- function(input, output, session) {
-  ## AUG 2021 ----------------------------------------------
-
-
-  output$Mosaic <- renderPlot({
+# This code tells the app what to do with the inputs from the UI
+#
+# Author: Scott Ogilvie
+# Date: 05/25/2022
+#
+# *********** End of header ****************
+server <- function(input, output, session) { # Server code
+  datasetInput <- reactive({ # These next lines of code are what allows for us to select specific data from the datasets. 
+    if (input$dontknows == "Yes") { # What happens when the "Don't Know" button is on Yes.
+      dataset <- resident_survey
+    }
+    else if (input$dontknows == "No") { # What happens when the "don't know" is on No.
+      dataset <- resident_survey_nodk
+    }
+    return(dataset) # Based on the above, the dataset is selected.
+  })
+  quarter_data <- reactive({ # Lines 12-16 are code to filter by quarter.
+    req(input$qrter)
+    quart_subset <-
+      subset(datasetInput(), `quarter` %in% input$qrter)
+  })
+  
+  output$Mosaic <- renderPlot({ # The code for the Mosaic Plot.
     graphics::mosaicplot(
-      ~ kcmofy2022_b[[input$xcol]] + kcmofy2022_c[[input$ycol]],
+      ~ quarter_data()[[input$xcol]] + quarter_data()[[input$ycol]], # Notice the data is "quarter_data()" not "quarter_data".
       xlab = input$xcol,
-      ylab = input$ycol, 
+      ylab = input$ycol,
       color = TRUE,
       shade = TRUE,
       las = 1,
       main = "Mosaic Plot",
       cex.axis = .656,
-      type = "deviance"
+      type = "pearson"
     )
   })
-
-  output$downloadMosaic <- downloadHandler(
+  
+  output$downloadMosaic <- downloadHandler( # Copy-Paste the above with some additional code for th download button.
+    #specify file name
     filename = function() {
-      paste("kcmofy22_mosaic", "png", sep = ".")
+      paste("mosaic", "png", sep = ".")
     },
     content = function(file) {
+      #open device
+      #write the plot
+      #close the device
       png(file)
       graphics::mosaicplot(
-        ~ kcmofy2022_b[[input$xcol]] + kcmofy2022_c[[input$ycol]],
+        ~ quarter_data()[[input$xcol]] + quarter_data()[[input$ycol]],
         xlab = input$xcol,
         ylab = input$ycol,
         color = TRUE,
@@ -35,216 +59,108 @@ server <- function(input, output, session) {
         type = "pearson"
       )
       dev.off()
-    })
+    }
+  )
   
   output$PlotXtabs <- renderPlot({
-    purrr::map2(
-      .x = input$xcol,
-      .y = input$ycol,
-      .f =  ~ PlotXTabs2(
-        x = all_of(.x),
+    pxt <- PlotXTabs2(
+      x = input$xcol,
+      title = "Relationship between Variables",
+      data = quarter_data(),
+      y = input$ycol,
+      legend.title =  input$ycol, # You could change this to a generic "Y Variable Selected:"
+      xlab = input$xcol,
+      ylab = "Percent of Column",
+      label.fill.alpha = .9,
+      legend.position= "top", # You can change the legend position to left, right or bottom as well.
+      perc.k = 0,
+      sample.size.label = T,
+      k=1,
+      bf.details= F,
+      bf.display= "support" ,
+      direction = -1,
+      plottype = "percent",
+      x.axis.orientation = "slant",
+      ggtheme = ggplot2::theme_classic(base_size = 14),
+      ggplot.component = e1
+    )
+    pxt<- pxt + scale_y_reverse()
+   print(pxt)
+
+  })
+  output$downloadplotx <- downloadHandler( # Download Handler works the same as the Mosaic one.
+   
+    filename = function() {#specify file name
+      paste("plotxtabs2", ".pdf", sep = ".")
+      
+    },
+    content = function(file) {#open device, write the plot,close the device
+
+      pdf(file)
+      pxt <- PlotXTabs2(
+        x = input$xcol,
         title = "Relationship between Variables",
-        data = kcmofy2022_b,
-        y = all_of(.y),
+        data = quarter_data(),
+        y = input$ycol,
         legend.title =  "Y Variable Selected",
         xlab = input$xcol,
-        ylab ="Percent of Column",
-        label.fill.alpha = .9,
-        perc.k = 0,
-        sample.size.label = T,
-        direction = 1,
-        plottype = "percent",
-        data.label = "both",
-        results.subtitle = ,
-        label.text.size = 4,
-        mosaic.offset = .01,
-        x.axis.orientation = "slant",
-        ggtheme = ggplot2::theme_classic(base_size = 14, base_family =),
-        ggplot.component = e1
-        
-      )
-    )
-  })
-  
-  output$table <- renderDataTable({
-    CRAMV <-lapply(kcmofy2022_b[,-1], function(x)
-        rcompanion::cramerV(table(x, kcmofy2022_b[[input$ycol]])))
-    CRAMVTAB <- data.table::rbindlist(lapply(CRAMV, tidy), idcol = TRUE)
-    CRAMVTAB <- CRAMVTAB %>%
-      filter(x != "Inf" & x != 1.0000)
-    CRAMVTAB <- CRAMVTAB %>%
-      filter(x > .10)
-    CRAMVTAB <- CRAMVTAB %>% dplyr::select(c(.id, x))
-    names(CRAMVTAB) <- c('Variable', "Cramer's V")
-    CRAMVTAB <- dplyr::arrange(CRAMVTAB, desc(`Cramer's V`))
-    CRAMVTAB
-  })
-  
-  output$simpley <- renderPlot({
-    kcmofy2022_b %>%
-      ggplot(aes(
-        x = kcmofy2022_b[[input$ycol]],
-        y = proportions(stat(count)),
-        label = scales::percent(prop.table(stat(count)), accuracy = 1)
-      )) +
-      geom_bar(fill = rgb(52, 148, 186, maxColorValue = 255))   +
-      theme(panel.grid.major = element_line(colour = NA)) +
-      scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) +
-      theme_classic()  +
-      labs(title = input$ycol,
-           y = "Percent",
-           x = input$ycol) +
-      geom_label(
-        stat = 'count',
-        position = position_dodge(.9),
-        vjust = 0.5,
-        size = 4
-      )
-  })
-  
-  output$simplex <- renderPlot({
-    kcmofy2022_b %>%
-      ggplot(aes(
-        x = kcmofy2022_b[[input$xcol]],
-        y = proportions(stat(count)),
-        label = scales::percent(prop.table(stat(count)), accuracy = 1)
-      )) +
-      geom_bar(fill = rgb(52, 148, 186, maxColorValue = 255))   +
-      theme(panel.grid.major = element_line(colour = NA)) +
-      scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) +
-      theme_classic()  +
-      labs(title = input$xcol,
-           y = "Percent",
-           x = input$xcol) +
-      geom_label(
-        stat = 'count',
-        position = position_dodge(.9),
-        vjust = 0.5,
-        size = 4
-      )
-  })
-  ## MAR 2022-----------------------------
-  output$Mosaic_2 <- renderPlot({
-    graphics::mosaicplot(
-      ~ kcmo_mar_2022[[input$xcol2]] + kcmo_mar_2022_c[[input$ycol2]],
-      xlab = input$xcol2,
-      ylab = input$ycol2, 
-      color = TRUE,
-      shade = TRUE,
-      las = 1,
-      main = "Mosaic Plot",
-      cex.axis = .656,
-      type = "pearson"
-    )
-  })
-  
-  output$downloadMosaic_2 <- downloadHandler(
-    filename = function() {
-      paste("kcmofy22_mosaic", "png", sep = ".")
-    },
-    content = function(file) {
-      png(file)
-      graphics::mosaicplot(
-        ~ kcmo_mar_2022[[input$xcol2]] + kcmo_mar_2022_c[[input$ycol2]],
-        xlab = input$xcol2,
-        ylab = input$ycol2,
-        color = TRUE,
-        shade = TRUE,
-        las = 1,
-        main = "Mosaic Plot",
-        cex.axis = .656,
-        type = "pearson"
-      )
-      dev.off()
-    })
-  
-  output$PlotXtabs_2 <- renderPlot({
-    purrr::map2(
-      .x = input$xcol2,
-      .y = input$ycol2,
-      .f =  ~ PlotXTabs2(
-        x = all_of(.x),
-        title = "Relationship between Variables",
-        data = kcmo_mar_2022,
-        y = all_of(.y),
-        legend.title = "Y Variable Selected",
-        xlab = input$xcol2,
         ylab = "Percent of Column",
         label.fill.alpha = .9,
+        legend.position= "top",
         perc.k = 0,
         sample.size.label = T,
-        direction = 1,
+        k=1,
+        bf.details= F,
+        bf.display= "support" ,
+        direction = -1,
         plottype = "percent",
-        data.label = "both",
-        results.subtitle = ,
-        label.text.size = 4,
-        mosaic.offset = .01,
         x.axis.orientation = "slant",
-        ggtheme = ggplot2::theme_classic(base_size = 14, base_family =),
+        ggtheme = ggplot2::theme_classic(base_size = 14, base_family = ),
         ggplot.component = e1
-        
       )
-    )
-  })
+      print(pxt)
+      dev.off()
+    }
+  )
   
-  output$table_2 <- renderDataTable({
-    CRAMV <-lapply(kcmo_mar_2022[,-1], function(x)
-      rcompanion::cramerV(table(x, kcmo_mar_2022[[input$ycol2]])))
-    CRAMVTAB <- data.table::rbindlist(lapply(CRAMV, tidy), idcol = TRUE)
-    CRAMVTAB <- CRAMVTAB %>%
-      filter(x != "Inf" & x != 1.0000)
-    CRAMVTAB <- CRAMVTAB %>%
-      filter(x > .10)
-    CRAMVTAB <- CRAMVTAB %>% dplyr::select(c(.id, x))
-    names(CRAMVTAB) <- c('Variable', "Cramer's V")
-    CRAMVTAB <- dplyr::arrange(CRAMVTAB, desc(`Cramer's V`))
-    CRAMVTAB
+  output$table <- renderDataTable({
+    cv1<-quarter_data() %>% # Taking out the y/n questions to avoid misuse of Cramer's V.
+      dplyr::select(!(q31_01_were_you_or_anyone_in_your_household_the_victim_of_any_crime_in_kansas_city_missouri_during_the_last_year:q31_22_are_you_aware_of_the_kc_spirit_playbook_the_citys_initiative_to_update_its_comprehensive_plan))
+    
+    CRAMV <- lapply(cv1[, -1], function(x)
+      rcompanion::cramerV(table(x, cv1[[input$ycol]])))
+    cramervtable <- as.data.frame(CRAMV)
+    cramervtable <- t(cramervtable)
+    cramervtable <- as.data.frame(cramervtable)
+    cramervtable <- tibble::rownames_to_column(cramervtable, "Variable")
+    cramervtable <- cramervtable %>%
+      filter(`Cramer V` != "Inf" & `Cramer V` != 1.0000)
+    cramervtable <- cramervtable %>%
+      filter(`Cramer V` > .10)
+    cramervtable <- dplyr::arrange(cramervtable, desc(`Cramer V`))
+    cramervtable
   })
-  
-  output$simpley_2 <- renderPlot({
-    kcmo_mar_2022 %>%
-      ggplot(aes(
-        x = kcmo_mar_2022[[input$ycol2]],
-        y = proportions(stat(count)),
-        label = scales::percent(prop.table(stat(count)), accuracy = 1)
-      )) +
-      geom_bar(fill = rgb(52, 148, 186, maxColorValue = 255))   +
-      theme(panel.grid.major = element_line(colour = NA)) +
-      scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) +
-      theme_classic()  +
-      labs(title = input$ycol2,
-           y = "Percent",
-           x = input$ycol2) +
-      geom_label(
-        stat = 'count',
-        position = position_dodge(.9),
-        vjust = 0.5,
-        size = 4
-      )
-  })
-  
-  output$simplex_2 <- renderPlot({
-    kcmo_mar_2022 %>%
-      ggplot(aes(
-        x = kcmo_mar_2022[[input$xcol2]],
-        y = proportions(stat(count)),
-        label = scales::percent(prop.table(stat(count)), accuracy = 1)
-      )) +
-      geom_bar(fill = rgb(52, 148, 186, maxColorValue = 255))   +
-      theme(panel.grid.major = element_line(colour = NA)) +
-      scale_y_continuous(labels = scales::percent_format(accuracy = 5L)) +
-      theme_classic()  +
-      labs(title = input$xcol2,
-           y = "Percent",
-           x = input$xcol2) +
-      geom_label(
-        stat = 'count',
-        position = position_dodge(.9),
-        vjust = 0.5,
-        size = 4
-      )
-  })
-  ## MAR 2021-----------------------------
-  
-}
 
+
+  
+  output$simplex <- renderPlotly({ # Creates the plot in the bottom right.
+    quarter_data_rev <- lapply(quarter_data()[,1:118],fct_rev)
+    p3 <- plot_ly( x = ~quarter_data()[[input$xcol]], color = ~quarter_data_rev[[input$ycol]]) |>
+      add_histogram()|>
+      layout(title = "",
+             xaxis = list(title = input$xcol,
+                          showgrid = F,
+                          showline = FALSE,
+                          showticklabels = TRUE,
+                          ticks = 'outside',
+                          zeroline = FALSE),
+             yaxis = list(title = "Count",
+                          showgrid = F,
+                          showline = FALSE,
+                          showticklabels = TRUE,
+                          ticks = 'outside',
+                          zeroline = FALSE),
+             legend = list(title = list(text=input$ycol)))
+    p3 
+  })
+}
