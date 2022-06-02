@@ -9,39 +9,26 @@
 # *********** End of header ****************
 # LIST OF REQUIRED PACKAGES -----------------------------------------------
 # Package names
-packages <-
-  c(
-    "broom",
-    "data.table",
-    "DT",
-    "CGPfunctions",
-    "ggridges",
-    "leaflet",
-    "lintr",
-    "lubridate",
-    "plotly",
-    "lubridate",
-    "rintrojs",
-    "shiny",
-    "shinycssloaders",
-    "shinydashboard",
-    "shinyjs",
-    "shinyWidgets",
-    "surveydata",
-    "ggpubr",
-    "tidyverse",
-    "rcompanion",
-    "viridis",
-    "zoo",
-    "recipes",
-    "readxl"
-  )
-
-# Install packages not yet installed
-installed_packages <- packages %in% rownames(installed.packages())
-if (any(installed_packages == FALSE)) {
-  install.packages(packages[!installed_packages])
-}
-
-# Packages loading
-invisible(lapply(packages, library, character.only = TRUE))
+library(rsconnect)
+library(broom)
+library(data.table)
+library(DT)
+library(CGPfunctions)
+library(ggridges)
+library(leaflet)
+library(lintr)
+library(lubridate)
+library(plotly)
+library(rintrojs)
+library(shiny)
+library(shinycssloaders)
+library(shinydashboard)
+library(shinyjs)
+library(shinyWidgets)
+library(surveydata)
+library(ggpubr)
+library(tidyverse)
+library(rcompanion)
+library(viridis)
+library(readxl)
+library(graphics)

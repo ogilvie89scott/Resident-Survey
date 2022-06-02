@@ -7,7 +7,9 @@
 # Date: 05/25/2022
 #
 # *********** End of header ****************
-server <- function(input, output, session) { # Server code
+# SERVER CODE----
+server <- function(input, output, session) { 
+  ## DEFINE REACTIVES----
   datasetInput <- reactive({ # These next lines of code are what allows for us to select specific data from the datasets. 
     if (input$dontknows == "Yes") { # What happens when the "Don't Know" button is on Yes.
       dataset <- resident_survey
@@ -22,7 +24,7 @@ server <- function(input, output, session) { # Server code
     quart_subset <-
       subset(datasetInput(), `quarter` %in% input$qrter)
   })
-  
+  ## MOSAIC----
   output$Mosaic <- renderPlot({ # The code for the Mosaic Plot.
     graphics::mosaicplot(
       ~ quarter_data()[[input$xcol]] + quarter_data()[[input$ycol]], # Notice the data is "quarter_data()" not "quarter_data".
@@ -61,7 +63,7 @@ server <- function(input, output, session) { # Server code
       dev.off()
     }
   )
-  
+  # PLOTXTABS2----
   output$PlotXtabs <- renderPlot({
     pxt <- PlotXTabs2(
       x = input$xcol,
@@ -89,13 +91,10 @@ server <- function(input, output, session) { # Server code
 
   })
   output$downloadplotx <- downloadHandler( # Download Handler works the same as the Mosaic one.
-   
     filename = function() {#specify file name
       paste("plotxtabs2", ".pdf", sep = ".")
-      
     },
     content = function(file) {#open device, write the plot,close the device
-
       pdf(file)
       pxt <- PlotXTabs2(
         x = input$xcol,
@@ -122,11 +121,10 @@ server <- function(input, output, session) { # Server code
       dev.off()
     }
   )
-  
+  ## CRAMER'S v----
   output$table <- renderDataTable({
     cv1<-quarter_data() %>% # Taking out the y/n questions to avoid misuse of Cramer's V.
       dplyr::select(!(q31_01_were_you_or_anyone_in_your_household_the_victim_of_any_crime_in_kansas_city_missouri_during_the_last_year:q31_22_are_you_aware_of_the_kc_spirit_playbook_the_citys_initiative_to_update_its_comprehensive_plan))
-    
     CRAMV <- lapply(cv1[, -1], function(x)
       rcompanion::cramerV(table(x, cv1[[input$ycol]])))
     cramervtable <- as.data.frame(CRAMV)
@@ -140,12 +138,10 @@ server <- function(input, output, session) { # Server code
     cramervtable <- dplyr::arrange(cramervtable, desc(`Cramer V`))
     cramervtable
   })
-
-
-  
+  ## PLOTLY GRAPH----
   output$simplex <- renderPlotly({ # Creates the plot in the bottom right.
-    quarter_data_rev <- lapply(quarter_data()[,1:118],fct_rev)
-    p3 <- plot_ly( x = ~quarter_data()[[input$xcol]], color = ~quarter_data_rev[[input$ycol]]) |>
+    quarter_data_rev <- lapply(quarter_data(),fct_rev)
+    plot_ly( x = ~quarter_data()[[input$xcol]], color = ~quarter_data_rev[[input$ycol]]) |>
       add_histogram()|>
       layout(title = "",
              xaxis = list(title = input$xcol,
@@ -161,6 +157,5 @@ server <- function(input, output, session) { # Server code
                           ticks = 'outside',
                           zeroline = FALSE),
              legend = list(title = list(text=input$ycol)))
-    p3 
   })
 }
