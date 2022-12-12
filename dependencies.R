@@ -9,6 +9,9 @@
 # *********** End of header ****************
 # LIST OF REQUIRED PACKAGES -----------------------------------------------
 # Package names
+packages <-c('rsconnect','broom','data.table','DT','CGPfunctions', 'ggridges','leaflet','lintr','lubridate','plotly','rintrojs','shiny','shinycssloaders','shinydashboard',
+             'shinyjs','shinyWidgets','surveydata','ggpubr','tidyverse','rcompanion','viridis','readxl','graphics')
+remotes::install_github('rstudio/DT')
 library(rsconnect)
 library(broom)
 library(data.table)

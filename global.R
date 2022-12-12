@@ -11,8 +11,8 @@
 # INSTRUCTIONS FOR UPLOADING NEW QUARTERS----
 # 1. Copy and paste all of the code from section "MAR 2022"
 # 2. Adapt code to read new data
-# 3. Create a dataset that filters the don't knows
-# 4. Combine datasets. Two new datasets. One with and one without don't knows.
+# 3. Create a data set that filters the don't knows
+# 4. Combine data sets. Two new data sets. One with and one without don't knows.
 # INSTALL DEPENDENCIES ----
 source('dependencies.R')
 # Load all packages
@@ -49,6 +49,7 @@ excellent2_labels <- c("Poor", "Below Average","Neutral","Good", "Excellent","Do
 yn_levels <- c(levels= 2, 1)
 yn_labels <- c("No", "Yes")
 freq_levels <- c(levels= 4, 3, 2, 1, 9)
+vd_vs_levels <- c(levels= 5,4,3,2,1,9)
 ### Apply the altered levels and labels----
 kcmofy2022_b[, 5:74] <- lapply(
   kcmofy2022_b[, 5:74],
@@ -70,7 +71,7 @@ kcmofy2022_b[, 78:80] <- lapply(## 27
   factor, levels = freq_levels,labels = c("At least monthly ","Several times  ","Once ", "Never ", "Don't Know"),  ordered = TRUE)
 kcmofy2022_b[, 106:109] <- lapply(## 32
   kcmofy2022_b[, 106:109],
-  factor, levels =vd_vs_levels, labels =vd_vs_labels, ordered = TRUE)
+  factor, levels =vd_vs_levels,ordered = TRUE)
 kcmofy2022_b$q28_h <- factor(
   kcmofy2022_b$q28_h,
   levels = excellent_levels,  labels = excellent_labels,  ordered = TRUE)
@@ -240,7 +241,7 @@ kcmo_mar_2022[, 78:80] <- lapply(## 27
   factor, levels = freq_levels,labels = c("At least monthly ","Several times  ","Once ", "Never ", "Don't Know"),  ordered = TRUE)
 kcmo_mar_2022[, 106:109] <- lapply(## 32
   kcmo_mar_2022[, 106:109],
-  factor, levels =vd_vs_levels, labels =vd_vs_labels, ordered = TRUE)
+  factor, levels =vd_vs_levels, ordered = TRUE)
 kcmo_mar_2022$q28_h <- factor(
   kcmo_mar_2022$q28_h,
   levels = excellent_levels,  labels = excellent_labels,  ordered = TRUE)
